@@ -56,7 +56,7 @@ const updateFood = async (req, res, next) => {
        
       const updatedFood= await Food.findOneAndUpdate({_id:foodId},{title,description,price},{new:true,upsert:true})
 
-        res.status(201).json({ success: true, message: "fooditem updated successfully",data:updatedCourse });
+        res.status(201).json({ success: true, message: "fooditem updated successfully",data:updatedFood });
     } catch (error) {
         next(error);
     }
@@ -65,7 +65,7 @@ const delteFood = async (req, res, next) => {
     try {
         const {foodId} = req.params;
     const foodDeleted=Food.findByIdAndDelete({id:foodId});
-    if(!courseDeleted)
+    if(!foodDeleted)
         return res.status(400).json({ success: true, message: "fooditem already deleted" });  
     res.status(200).json({ success: true, message: "foode deleted successfully",data:foodDeleted });
     }
