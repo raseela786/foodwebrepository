@@ -82,7 +82,7 @@ res.json({Success:true,message:"user login successfully"})
     const userLogout=async(req,res,next)=>
         {
         try{
-          res.clearCookie("token");
+          res.clearCookie(token);
           res.cookie("token", token, {
             sameSite: "None",
             secure: true,
