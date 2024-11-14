@@ -64,13 +64,11 @@ const userLogin=async(req,res,next)=>
         return res.status(401).json({meassage:"user not authorized"})
     }
     const token=generateToken(userExist._id);
-
     res.cookie("token", token, {
         sameSite: "None",
         secure: true,
         httpOnly: true,
     });
-
 res.json({Success:true,message:"user login successfully"})
     }
     
@@ -85,6 +83,11 @@ res.json({Success:true,message:"user login successfully"})
         {
         try{
           res.clearCookie("token");
+          res.cookie("token", token, {
+            sameSite: "None",
+            secure: true,
+            httpOnly: true,
+        });
           res.json({message:'user logout success',suceess:true})
         }
         
