@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const {generateToken}= require("../utils/token")
 const userSignup=async(req,res,next)=>
 {
+    console.log("iside siguuuuuuuuuuup")
 try{
    const {name,email,password,phone,food}=req.body;
 if(! name|| !email || !password ){
@@ -100,6 +101,24 @@ res.json({Success:true,message:"user login successfully"})
                 res.status(error.statusCode || 500).json({message:error.message|| "internel server error"})
             }
             }
+            const userProfiles=async(req,res,next)=>
+                {
+                try{
+                    const user=req.user;// or //const {user}=req;
+                    console.log(user,",,,,,,,,,,,,,,,,,user");
+                    
+                   // const {id}= req.params;
+               const userData = await User.find({});
+               return res.json({message:'user data fetcheds',suceess:true,data:userData})
+                }
+                
+                
+                catch(error)
+                {
+                    console.log(error)
+                    res.status(error.statusCode || 500).json({message:error.message|| "internel server error"})
+                }
+                }
             const checkUser=async(req,res,next)=>
                 {
                 try{
@@ -119,4 +138,25 @@ res.json({Success:true,message:"user login successfully"})
                     res.status(error.statusCode || 500).json({message:error.message|| "internel server error"})
                 }
                 }
-module.exports={userSignup,userLogin,userLogout,userProfile,checkUser}
+                const updateProfile= async (req, res, next) => {
+                    try {
+                        const {userId} = req.params;
+                
+                        const { name, email, password,phone} = req.body;
+                      
+                
+                        const isUserExist = await User.findOne({_id:userId});
+                
+                        if (!isUserExist) {
+                            return res.status(400).json({ success: false, message: "user does not exist" });
+                        }
+                
+                       
+                      const updatedUser= await User.findOneAndUpdate({_id:userId},{name, email, password,phone},{new:true,upsert:true})
+                
+                        res.status(201).json({ success: true, message: "user details updated successfully",data:updatedUser });
+                    } catch (error) {
+                        next(error);
+                    }
+                };
+module.exports={userSignup,userLogin,userLogout,userProfile,checkUser,userProfiles,updateProfile}

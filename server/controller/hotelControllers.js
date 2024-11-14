@@ -25,6 +25,7 @@ const addHotel = async (req, res, next) => {
         await newHotel.save();
 
         res.status(201).json({ success: true, message: "hotel added successfully" });
+        
     } catch (error) {
         next(error);
     }
@@ -63,4 +64,24 @@ const delteHotel = async (req, res, next) => {
      catch (error) {
         next(error);
     }};
-module.exports={addHotel,updateHotel,delteHotel};
+    const getHotelList = async (req, res, next) => {
+        try {
+            const hotelList = await Hotel.find();
+    
+            res.status(200).json({ success: true, message: "list of hotels fetched", data: hotelList });
+        } catch (error) {
+            next(error);
+        }
+    };
+    const gethotelDetails = async (req, res, next) => {
+        try {
+            const {name} =req.params;
+            
+            const hoteldetail = await Hotel.findOne({name});
+ 
+            res.status(200).json({ success: true, message: "hotel details fetched", data: hoteldetail });
+        } catch (error) {
+            next(error);
+        }
+    };
+module.exports={addHotel,updateHotel,delteHotel,getHotelList,gethotelDetails};

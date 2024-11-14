@@ -19,10 +19,10 @@ const addToCart = async (req, res) => {
         }
 
         // Check if the fooditem is already in the cart
-        const foodExists = cart.foodItems.some((item) => item.foodId.equals(foodId));
-        if (foodExists) {
-            return res.status(400).json({ message: "food item already in cart" });
-        }
+        //const foodExists = cart.foodItems.some((item) => item.foodId.equals(foodId));
+      //  if (foodExists) {
+         //   return res.status(400).json({ message: "food item already in cart" });
+       // }
 
         // Add the food to the cart
         cart.foodItems.push({
@@ -45,18 +45,19 @@ const removeFromCart = async (req, res) => {
     try {
         const userId = req.user.id;
         const { foodId } = req.body;
-
+console.log("fooooooooooooooooooooooooooooood from frot ed",{ foodId })
         // Find the user's cart
         let cart = await Cart.findOne({ userId });
         if (!cart) {
             return res.status(404).json({ message: "Cart not found" });
         }
 
-        // Remove the course from the cart
+        // Remove the food item from the cart
         cart.foodItems = cart.foodItems.filter((item) => item.foodId !=foodId);
 
         // Recalculate the total price
         cart.calculateTotalPrice();
+        
 
         // Save the cart
         await cart.save();

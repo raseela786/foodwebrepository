@@ -13,7 +13,11 @@ const foodSchema=new mongoose.Schema({
         type: Number,
         required: true
     },
-
+    hotel: {
+        type: String,
+        ref: "Hotel",
+        required: true,
+    },
     image: {
         type: String, // URL or path to the image
         required: false,

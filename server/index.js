@@ -1,16 +1,24 @@
 const express = require("express");
+const cors=require("cors");
 const { apiRouter } = require("./routes");
 const { connectDB } = require("./config/db");
 const cookieParser=require("cookie-parser");
 const { handleError } = require("./utils/error");
+
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+    origin:"http://localhost:5173",
+    credentials:true,
+}))
 connectDB();
 app.get("/",(req,res)=>
 {
     res.send("hhhhhhhhhhhhhhhhhhhhhh")
+    
 })
+
 app.use("/api",apiRouter);
 app.use(handleError); 
 app.all("*",(req,res)=>{
