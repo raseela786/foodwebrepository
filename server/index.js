@@ -9,8 +9,10 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin:["http://localhost:5173","https://food-app-wine-ten.vercel.app"],
-    credentials:true,
+    origin:["http://localhost:5173","https://food-frontend-opal.vercel.app"],
+    credentials: true,
+    methods :['POST','GET',"PUT","DELETE","OPTION"],
+
 }))
 connectDB();
 app.get("/",(req,res)=>
