@@ -23,9 +23,15 @@ console.log(hashedPassword);
 const newUser =new Admin({name,email,password: hashedPassword}) ;
 await newUser.save();
 
+
 const token=generateToken(newUser._id);
 
-res.cookie("token",token);
+
+res.cookie("token", token, {
+    sameSite: "None",
+    secure: true,
+    httpOnly: true,
+});
 res.json({Success:true,message:"admin created successfully"})
 }
 
@@ -57,8 +63,14 @@ const adminLogin=async(req,res,next)=>
         return res.status(401).json({meassage:"admi not authorized"})
     }
     const token=generateToken(adminExist._id,'admin');
-res.cookie("token",token);
-res.json({Success:true,message:"admi login successfully"})
+
+
+res.cookie("token", token, {
+    sameSite: "None",
+    secure: true,
+    httpOnly: true,
+});
+res.json({Success:true,message:"admin login successfully"})
     }
     
     
@@ -70,11 +82,16 @@ res.json({Success:true,message:"admi login successfully"})
     }
     const adminLogout=async(req,res,next)=>
         {
-        try{
-          res.clearCookie("token");
+   
+            try {
+                res.clearCookie("token", {
+                    sameSite: "None",
+                    secure: true,
+                    httpOnly: true,
+                })
           res.json({message:'admi logout success',suceess:true})
-        }
-        
+            }
+      
         
         catch(error)
         {
