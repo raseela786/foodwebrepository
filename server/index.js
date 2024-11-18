@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin:["http://localhost:5173","https://food-frontend-opal.vercel.app"],
+    origin:["http://localhost:5173","https://foodweb-front-end.vercel.app"],
     credentials: true,
     methods :['POST','GET',"PUT","DELETE","OPTION"],
 
