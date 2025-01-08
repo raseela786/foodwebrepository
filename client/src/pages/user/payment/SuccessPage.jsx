@@ -1,9 +1,11 @@
-import React from 'react'
+// src/pages/user/payment/SuccessPage.jsx
+import React from 'react';
 
-export const SuccessPage = () => {
-    console.log('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
+export const Successpage = () => {
   return (
-    <div>Su
-        ccessPage</div>
-  )
-}
+    <div>
+      <h2>Payment Successful!</h2>
+      <p>Your payment has been processed successfully.</p>
+    </div>
+  );
+};

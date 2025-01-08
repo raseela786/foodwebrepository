@@ -17,14 +17,14 @@ required:true,
                 foodId: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "Food",
-                   // required: true,
+                    required: true,
                 },
                
             },
         ],
         totalPrice: {
             type: Number,
-           // required: true,
+            required: true,
             default: 0,
         },
     },

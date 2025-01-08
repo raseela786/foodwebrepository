@@ -20,8 +20,9 @@ import { Orders } from "../pages/admin/Orders";
 import { UsersDetailsPage } from "../pages/admin/UsersDetailsPage";
 import { DashBoard } from "../pages/admin/DashBoard";
 import { Adminlogout } from "../pages/admin/Adminlogout";
-import { SuccessPage } from "../pages/user/payment/SuccessPage";
+import { Successpage,} from "../pages/user/payment/SuccessPage";
 import { LoginPage } from "../pages/LoginPage";
+import PaymentSuccess from "../payment/PaymentSuccessPage";
 
 
 
@@ -55,6 +56,7 @@ export const router = createBrowserRouter([
           path: "fooditem-details/:id/:name",
           element: <FoodItemDetails />,
       },
+      
       {
         path:'user',
         element:  <AuthUser/>,
@@ -69,11 +71,9 @@ export const router = createBrowserRouter([
           element:<CartPage/>
         },
         {
-          path: "payment/success",
-  element:<SuccessPage/>
-      },
-      
-      
+          path:'payment/success',
+          element:<PaymentSuccess/>
+        },
       {
         path: "payment/cancel",
         element: <h2>failed</h2>
