@@ -1,7 +1,7 @@
 
-const {  handleImageUpload} = require("../utils/imageUpload");
+const {   handleImageUpload1} = require("../utils/imageUpload");
 const{ Food }=require("../model/foodModel");
-const createFood = async (req, res, next) => {
+const createFood = async (req, res,next) => {
     try {
         const user = req.user;
 
@@ -19,9 +19,9 @@ const createFood = async (req, res, next) => {
         }
 
         if (req.file) {
-           
-            imageUrl = await handleImageUpload(req.file.path);
-           
+         
+            imageUrl = await handleImageUpload1(req.file.path);
+        
 
         }
 
@@ -50,7 +50,7 @@ const updateFood = async (req, res, next) => {
         }
 
         if (req.file) {
-            imageUrl = await handleImageUpload(req.file.path);
+            imageUrl = await handleImageUpload1(req.file.path);
         }
 
        

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { axiosInstance } from '../../config/axiosinstance';
 
+
 export const FoodAddingPage = () => {
 
   const { register, handleSubmit } = useForm();

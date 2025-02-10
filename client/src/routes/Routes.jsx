@@ -1,5 +1,5 @@
-import {createBrowserRouter} from "react-router-dom"
-import { Homes } from "../pages/Homes"
+import { createBrowserRouter, Outlet } from "react-router-dom";
+import { Homes } from "../pages/Homes";
 
 import { About } from "../pages/About";
 import { FoodItemList } from "../pages/FoodItemList";
@@ -20,112 +20,123 @@ import { Orders } from "../pages/admin/Orders";
 import { UsersDetailsPage } from "../pages/admin/UsersDetailsPage";
 import { DashBoard } from "../pages/admin/DashBoard";
 import { Adminlogout } from "../pages/admin/Adminlogout";
-import { Successpage,} from "../pages/user/payment/SuccessPage";
+
 import { LoginPage } from "../pages/LoginPage";
+//import PaymentSuccessPage from "../payment/PaymentSuccessPage";
+import UserOrdersPage from "../pages/Order";
+
+//import ManageCoupons from "../pages/admin/Managecoupon";
 import PaymentSuccess from "../payment/PaymentSuccessPage";
 
-
-
 export const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <UserLayout/>,
-      errorElement:<ErrorPage/>,
-      children:[
-        {
-          path:'',
-          element:<Homes/>,
-        },
-        {
-          path:'about',
-          element:<About/>,
-        },
-        {
-          path: "login",
-          element: <LoginPage/>
+  {
+    path: "/",
+    element: <UserLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "",
+        element: <Homes />,
       },
       {
-          path: "signup",
-          element: <SignUp/>,
+        path: "about",
+        element: <About />,
       },
       {
-          path: "food",
-          element: <FoodItemList />,
+        path: "login",
+        element: <LoginPage />,
       },
       {
-          path: "fooditem-details/:id/:name",
-          element: <FoodItemDetails />,
+        path: "signup",
+        element: <SignUp />,
       },
-      
       {
-        path:'user',
-        element:  <AuthUser/>,
-     
-        children:[
+        path: "food",
+        element: <FoodItemList />,
+      },
+      {
+        path: "fooditem-details/:id/:name",
+        element: <FoodItemDetails />,
+      },
+
+      {
+        path: "user",
+        element: <AuthUser />,
+
+        children: [
           {
-          path:"profile",
-          element:<ProfilePage/>
-        },
-        {
-          path:"cart",
-          element:<CartPage/>
-        },
-        {
-          path:'payment/success',
-          element:<PaymentSuccess/>
-        },
-      {
-        path: "payment/cancel",
-        element: <h2>failed</h2>
-    },
+            path: "profile",
+            element: <ProfilePage />,
+          },
+          {
+            path: "cart",
+            element: <CartPage />,
+          },
+          {
+            path: "payment/success",
+            element: <PaymentSuccess/>,
+          },
+         {
+            path:'order',
+            element:<UserOrdersPage/>
+                      },
+          {
+            path: "payment/cancel",
+            element: <h2>failed</h2>,
+          },
+          {
+            path: "payment/complete",
+            element: <h1>complete</h1>,
+          },
         ],
-            },
-      ],
-    },
-   
-    {    
-      path:'admin',
-element:<AdminLayout/>,
+      },
+    ],
+  },
 
+  {
+    path: "admin",
+    element: <AdminLayout />,
 
-        children:[
+    children: [
+      {
+        path: "logings",
+        element: <LoginPageA />,
+      },
+      {
+        path: "logout",
+        element: <Adminlogout />,
+      },
+
+      {
+        path: "",
+        // element: ,
+        children: [
           {
-            path:"logings",
-            element: <LoginPageA/>
+            path: "dashboard",
+            element: <DashBoard />,
           },
           {
-            path:"logout",
-            element: <Adminlogout/>
+            path: "hotel",
+            element: <HotelPage />,
           },
-          
           {
-            path:"",
-                   // element: ,
-            children:[
-              {
-                path:"dashboard",
-                element: <DashBoard/>
-              },
+            path: "Food-adding",
+            element: <FoodAddingPage />,
+          },
           {
-          path:"hotel",
-          element: <HotelPage/>
-        },
-        {
-          path:"Food-adding",
-          element: <FoodAddingPage/>
-        },
-        {
-          path:"orders",
-          element:<Orders/>
-        },
-        {
-          path:"users",
-          element: <UsersDetailsPage/>
-        },
-        
-        ]
-    }
-  ]
-    }
-  
-  ]);
+            path: "orders",
+            element: <Orders />,
+          },
+          {
+            path: "users",
+            element: <UsersDetailsPage />,
+          },
+          /*{
+            path: "coupon",
+            element: <ManageCoupons/>,
+          },*/
+        ],
+      },
+    ],
+  },
+]);

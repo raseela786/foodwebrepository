@@ -12,8 +12,8 @@ app.use(cors({
     origin:["http://localhost:5173","https://foodweb-front-end.vercel.app"],
     credentials: true,
     methods :['POST','GET',"PUT","DELETE","OPTION"],
-
-}))
+ 
+}));
 connectDB();
 app.get("/",(req,res)=>
 {

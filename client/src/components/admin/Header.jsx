@@ -26,7 +26,9 @@ export const AdminHeader = () =>
                 <Link to={"hotel"}>Hotel-adding</Link>
                 <Link to={"Food-adding"}>Food-adding</Link>
         
-                <Link to={"users"}>RegisteredUsers</Link> 
+                <Link to={"users"}>RegisteredUsers</Link>
+                 
+                <Link to={"coupon"}>Coupon Creation</Link>
                 <button onClick={logoutAdmin} className="btn btn-secondary"> Log-out </button>
             </nav>
 

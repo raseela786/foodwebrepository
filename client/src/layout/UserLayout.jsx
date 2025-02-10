@@ -26,7 +26,7 @@ export const UserLayout = () => {
         );
        
    dispatch(saveUser())
-       
+  setLoaading(false);     
 }
 catch(error)
 {
@@ -39,7 +39,7 @@ useEffect(()=>{
   checkuser();
 },[location.pathname])
 
-  return loading ? null :(
+  return loading? null:  (
     <div>
      {isUserExist ? <UserHeader/>:<Header/>} 
     <div className='min-h-96'><Outlet/></div>

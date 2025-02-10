@@ -27,6 +27,11 @@ required:true,
             required: true,
             default: 0,
         },
+        status: {
+            type: String,
+            enum: ["Pending", "Completed", "Canceled"],
+            default: "Pending",
+          },
     },
     { timestamps: true }
 );

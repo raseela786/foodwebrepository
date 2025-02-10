@@ -39,11 +39,19 @@ export const FoodCards = ({ food }) => {
 }
 
 
-export const CartCards = ({ item, product,onRemove }) => {
+export const CartCards = ({ item, product,onRemove,onUpdateQuantity }) => {
   const handleRemoveClick = () => {
     // Trigger the onRemove function passed from the CartPage component
     onRemove(item.foodId._id);
     
+  };
+
+  const handleQuantityChange = (operation) => {
+    if (operation === "increment") {
+      onUpdateQuantity(item.foodId._id, item.quantity + 1);
+    } else if (operation === "decrement" && item.quantity > 1) {
+      onUpdateQuantity(item.foodId._id, item.quantity - 1);
+    }
   };
 
   return (
@@ -60,6 +68,22 @@ export const CartCards = ({ item, product,onRemove }) => {
         <h2 className="text-xl font-semibold text-gray-800 truncate">{item?.foodId?.title}</h2>
         <p className="text-sm text-gray-600">{item?.foodId?.description}</p>
         <p className="text-lg font-bold text-green-500 mt-1">{item?.foodId?.price}</p>
+      </div>
+      {/* Quantity Controls */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => handleQuantityChange("decrement")}
+          className="px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"
+        >
+          -
+        </button>
+        <span className="text-lg">{item?.quantity}</span>
+        <button
+          onClick={() => handleQuantityChange("increment")}
+          className="px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"
+        >
+          +
+        </button>
       </div>
 
       {/* Remove Button */}

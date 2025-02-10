@@ -16,12 +16,13 @@ module.exports={hadleImageUpload}*/
 const { cloudinaryInstance } = require("../config/cloudinaryConfig");
 
 
-const handleImageUpload = async(path)=>{
+const handleImageUpload1 = async(path)=>{
     try {
         console.log("haiiiiiiii iside hadle image")
-        const uploadResult = await cloudinaryInstance.uploader.upload(path);
-        console.log(uploadResult,"path");
-        return uploadResult.url;
+       // const uploadResult = await cloudinaryInstance.uploader.upload(path);
+       const uploadResul= await cloudinaryInstance.uploader.upload(path);
+        console.log(uploadResul,"path");
+        return uploadResul.url;
 
 
     } catch (error) {
@@ -30,4 +31,4 @@ const handleImageUpload = async(path)=>{
     }
 }
 
-module.exports={handleImageUpload}
+module.exports={handleImageUpload1}

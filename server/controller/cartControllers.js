@@ -4,7 +4,7 @@ const { Food } = require("../model/foodModel");
 const addToCart = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { foodId } = req.body;
+        const { foodId , quantity = 1} = req.body;
 
         // Find the food to ensure it exists and fetch its price
         const food = await Food.findById(foodId);
@@ -82,5 +82,22 @@ const getCart = async (req, res) => {
         res.status(500).json({ message: "Internal server error", error });
     }
 };
+const clearcart = async (req, res) => {
+    try {
+        const userId = req.user.id; // JWT token should set user ID in the request
+        
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID not found in the token' });
+        }
 
-module.exports = { addToCart, removeFromCart, getCart };
+        // Clear the cart for the authenticated user
+        await Cart.deleteOne({ userId: userId });
+
+        res.status(200).json({ message: 'Cart cleared successfully' });
+    } catch (error) {
+        console.error("Error clearing cart:", error);
+        res.status(500).json({ message: 'Failed to clear cart' });
+    }
+};
+
+module.exports = { addToCart, removeFromCart, getCart ,clearcart};
