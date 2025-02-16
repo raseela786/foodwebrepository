@@ -41,7 +41,31 @@ const createCoupon = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to create coupon" });
   }
 };
+const getCoupons = async (req, res) => {
 
+    const { subtotal } = req.body;  // Getting subtotal from the request body
+console.log("sutmmmmmmmmmmmmmmmmmmmotal",subtotal);
+    try {
+      // Find active coupons that are eligible for the subtotal
+      const coupons = await Coupon.find({
+        isActive: true,
+        expiryDate: { $gte: new Date() },  // Check if coupon is not expired
+        minSubtotal: { $lte: subtotal },  // Ensure coupon's minimum subtotal is less than or equal to the current subtotal
+      });
+  
+      if (!coupons || coupons.length === 0) {
+        return res.status(404).json({ success: false, message: "No available coupons for this subtotal." });
+      }
+  
+      res.status(200).json({
+        success: true,
+        coupons,
+      });
+    } catch (error) {
+      console.error("Error fetching available coupons:", error.message);
+      res.status(500).json({ success: false, message: "Failed to fetch available coupons." });
+    }
+  };
 /**
  * Validate a coupon
  */
@@ -178,4 +202,4 @@ console.log("Cart total price after calculation:", cart.totalPrice);
     });
   }
 };
-module.exports ={createCoupon,validateCoupon,applyCoupon};
+module.exports ={createCoupon,validateCoupon,applyCoupon,getCoupons};

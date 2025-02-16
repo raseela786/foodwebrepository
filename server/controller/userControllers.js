@@ -1,11 +1,13 @@
 const { User } = require("../model/userModel");
 const bcrypt = require('bcrypt');
-const {generateToken}= require("../utils/token")
+const {generateToken}= require("../utils/token");
+const { handleImageUpload1 } = require("../utils/imageUpload");
 const userSignup=async(req,res,next)=>
 {
     console.log("iside siguuuuuuuuuuup")
 try{
    const {name,email,password,phone,food}=req.body;
+   let imageUrl;
 if(! name|| !email || !password ){
    return res.status(400).json({success:false,
         message:"all field required"
@@ -16,12 +18,18 @@ if(isuserExist)
 {
     return res.status(400).json({message:"user already exist"})
 }
+if (req.file) {
+         
+    imageUrl = await handleImageUpload1(req.file.path);
+
+
+}
 const saltRounds=10;
 const hashedPassword = bcrypt.hashSync(password, saltRounds);
 
 console.log(hashedPassword);
 
-const newUser =new User({name,email,password: hashedPassword,phone}) ;
+const newUser =new User({name,email,password: hashedPassword,phone,image: imageUrl && imageUrl}) ;
 await newUser.save();
 
 const token=generateToken(newUser._id);
@@ -174,4 +182,14 @@ res.json({Success:true,message:"user login successfully"})
                         next(error);
                     }
                 };
-module.exports={userSignup,userLogin,userLogout,userProfile,checkUser,userProfiles,updateProfile}
+               const userProfilePic=async (req, res,next) => {
+                    try {
+                      const user = await User.findById(req.user._id); // Get user by ID (authentication required)
+                      res.json({ data: user }); // Return user data including profilePic URL
+                    } catch (error) {
+                        next(error);
+                      res.status(500).json({ message: "Failed to fetch profile" });
+                    }
+                  };
+                  
+module.exports={userSignup,userLogin,userLogout,userProfile,checkUser,userProfiles,updateProfile,userProfilePic}

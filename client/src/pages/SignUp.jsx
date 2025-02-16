@@ -9,11 +9,21 @@ const navigate=useNavigate();
 const onSubmit = async (data)=>
 {
   try{
+     // Create FormData object to handle file upload
+     const formData = new FormData();
+     formData.append('name', data.name);
+     formData.append('email', data.email);
+     formData.append('password', data.password);
+     formData.append('phone', data.phone);
+     formData.append('image', data.image[0]); 
     const reponse =await axiosInstance(
       {
         method:"POST",
         url:"/user/signup",
-        data
+        data:formData,
+        headers: {
+          'Content-Type': 'multipart/form-data', // Important header for file uploads
+        },
       }
     )
     toast.success("Registered successfully");
@@ -44,6 +54,12 @@ navigate('/')
           </label>
           <input type="text" {...register('name')}placeholder="Name" className="input input-bordered" required />
         </div>
+        <div className="form-control">
+              <label className="label">
+                <span className="label-text">Profile Picture</span>
+              </label>
+              <input type="file" {...register('image')} placeholder="picture" className="input input-bordered" required />
+            </div>
         <div className="form-control">
           <label className="label">
             <span className="label-text">Email</span>

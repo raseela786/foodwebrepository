@@ -14,7 +14,8 @@ export const CartPage = () => {
   const [finalAmount, setFinalAmount] = useState(0);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
-  
+  const [availableCoupons, setAvailableCoupons] = useState([]); // To hold the available coupons
+  const [selectedCoupon, setSelectedCoupon] = useState(null); // To hold the selected coupon
   const navigate=useNavigate();
   // Fetch cart items from API
   const fetchCartItems = async () => {
@@ -68,6 +69,20 @@ export const CartPage = () => {
     
     return subtotal - discount;
   };
+ // Fetch available coupons based on subtotal
+ const fetchAvailableCoupons = async () => {
+  const subtotal = calculateTotal();
+  try {
+    const response = await axiosInstance.post("/coupons/getcoupons", { subtotal });
+    if (response.data.success) {
+      setAvailableCoupons(response.data.coupons);
+    } else {
+      setAvailableCoupons([]); // Clear the list if no coupons available
+    }
+  } catch (error) {
+   console.log(error)
+  }
+};
 
   // Handle payment
   const makePayment = async () => {
@@ -96,33 +111,7 @@ export const CartPage = () => {
     }
   };
 
-  /* Apply coupon logic
-  const applyCoupon = () => {
-    // Example coupon logic: Apply a 10% discount for any coupon code
-    if (couponCode) {
-      setDiscount(calculateTotal() * 0.1); // Apply 10% discount
-    }
-  };*//*
-  const applyCoupon = async () => {
-    try {
-      const response = await  axiosInstance.post("/coupons/checkout",
-         {
-        couponCode,
-        cartId: cartData._id,
-      });
 
-      if (response.data.message === "Coupon applied successfully") {
-        const { finalAmount: updatedFinalAmount, discount: appliedDiscount } = response.data;
-
-        setDiscount(appliedDiscount || 0);
-        setFinalAmount(updatedFinalAmount || cartData.totalPrice);
-        toast.success("Coupon applied successfully!");
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to apply coupon.");
-    }
-  };*/
-// Call clearCart function after successful payment redirection
 const handleSuccessRedirect = () => {
   clearCart(); // Clear the cart in the frontend
   navigate("/");
@@ -133,9 +122,13 @@ const clearCart = () => {
   localStorage.removeItem("cart"); // Clear cart in local storage
 };
 const applyCoupon = async () => {
+  if (!selectedCoupon) {
+    toast.error("Please select a coupon");
+    return;
+  }
   try {
     const response = await axiosInstance.post("/coupons/apply", {
-      couponCode,
+      couponCode: selectedCoupon.code,
       cartId: cartData._id,
     });
 
@@ -153,6 +146,9 @@ const applyCoupon = async () => {
   useEffect(() => {
     fetchCartItems();
   }, []);
+  useEffect(() => {
+    fetchAvailableCoupons();
+  }, [cartItems, discount]); // Re-fetch available coupons when cart items or discount change
 
   return (
     <div className="flex gap-10 px-10 py-10">
@@ -178,34 +174,51 @@ const applyCoupon = async () => {
           <span className="font-medium">Subtotal:</span>
           <span className="font-semibold">{calculateTotal().toFixed(2)}</span>
         </div>
-                {/* Coupon Section */}
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Have a coupon?</h3>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value)}
-              placeholder="DISCOUNT10"
-              className="px-4 py-2 border border-gray-300 rounded-lg w-full"
-            />
-            <button
-              onClick={applyCoupon}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-            >
-              Apply
-            </button>
-          </div>
-      
 
+        {/* Coupon Section */}
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold mb-2">Available Coupons</h3>
+          {availableCoupons.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {availableCoupons.map((coupon) => (
+                // Show only the selected coupon or allow selection of new coupon
+                <div key={coupon.code}>
+                  {selectedCoupon && selectedCoupon.code === coupon.code ? (
+                    <button
+                      className="px-4 py-2 border border-gray-300 rounded-lg bg-blue-200"
+                      disabled
+                    >
+                      {coupon.code} - {coupon.discount}% OFF (Selected)
+                    </button>
+                  ) : (
+                    <button
+                      className="px-4 py-2 border border-gray-300 rounded-lg"
+                      onClick={() => setSelectedCoupon(coupon)}
+                    >
+                      {coupon.code} - {coupon.discount}% OFF
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No coupons available</p>
+          )}
         </div>
+
+        {/* Apply Coupon Button */}
+        <button
+          onClick={applyCoupon}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4"
+          disabled={!selectedCoupon}
+        >
+          Apply Coupon
+        </button>
 
         {/* Total Price */}
         <div className="flex justify-between text-xl font-semibold text-gray-900 border-t pt-4 mt-4 border-gray-300">
           <span>Total Price:</span>
-          <span>
-            {finalAmount}
-          </span>
+          <span>{finalAmount}</span>
         </div>
 
         {/* Checkout Button */}

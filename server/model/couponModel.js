@@ -8,9 +8,14 @@ const couponSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  discount: {
+  discount: {                                               
     type: Number,
     required: true,
+  },
+  minSubtotal: {
+    type: Number,
+    required: true,
+    default: 0,
   },
   expiryDate: {
     type: Date,

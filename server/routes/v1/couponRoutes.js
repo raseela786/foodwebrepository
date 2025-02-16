@@ -1,7 +1,7 @@
 // routes/couponRoutes.js
 // routes/v1/CouponRoutes.js
 const express = require('express');
-const { createCoupon, validateCoupon, applyCoupon } = require('../../controller/couponControllers');
+const { createCoupon, validateCoupon, applyCoupon, getCoupons } = require('../../controller/couponControllers');
 
 //const { adminAuth } = require('../../middlewares/adminAuth');
 const router = express.Router();
@@ -15,5 +15,5 @@ router.post('/validate', validateCoupon);
 
 // RoApply a coupon to the cart (accessible to all users)
 router.post('/apply', applyCoupon);
-
+router.post("/getcoupons",getCoupons)
 module.exports = { couponRouter: router };
