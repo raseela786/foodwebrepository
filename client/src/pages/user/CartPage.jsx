@@ -26,6 +26,7 @@ export const CartPage = () => {
       });
       setCartItems(response?.data?.data?.foodItems);
       setCartData(response.data?.data);
+      setFinalAmount(response?.data?.data?.totalPrice);
     } catch (error) {
       console.log(error);
     }
@@ -44,6 +45,7 @@ export const CartPage = () => {
         const updatedCartItems = cartItems.filter((item) => item.foodId._id !== itemId);
         setCartItems(updatedCartItems);
         setCartData(response.data?.data);
+        setFinalAmount(response.data.totalPrice || 0);
       }
     } catch (error) {
       console.log("Error removing item:", error);
@@ -94,7 +96,9 @@ export const CartPage = () => {
       const session = await axiosInstance({
         url: "/payment/create-checkout-session",
         method: "POST",
-        data: { products: cartItems },
+        data:
+         { products: cartItems ,
+         finalprice:finalAmount}
       });
 
       const result = await stripe.redirectToCheckout({
