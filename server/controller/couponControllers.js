@@ -52,8 +52,8 @@ console.log("sutmmmmmmmmmmmmmmmmmmmotal",subtotal);
         expiryDate: { $gte: new Date() },  // Check if coupon is not expired
         minSubtotal: { $lte: subtotal },  // Ensure coupon's minimum subtotal is less than or equal to the current subtotal
       });
-  
-      if (!coupons || coupons.length === 0) {
+  console.log("aaaaaaaaaavailable coupons",coupons);
+      if (!coupons) {
         return res.status(404).json({ success: false, message: "No available coupons for this subtotal." });
       }
   

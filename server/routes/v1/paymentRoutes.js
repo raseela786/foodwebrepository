@@ -11,11 +11,12 @@ const router = express.Router();
 
 router.post("/create-checkout-session", userAuth, async (req, res, next) => {
     try {
-        const { products,finalprice} = req.body;
+        const { products,finalprice,discounts} = req.body;
 
         // Log the request to ensure that you're not processing multiple requests for the same session
         console.log("Creating checkout session with products: ", products);
         console.log("final priceeeeeeeeee",finalprice);
+        console.log("final priceeeeeeeeee",discounts);
         const line = products.map((product) => ({
             price_data: {
                 currency: "inr",
@@ -32,14 +33,13 @@ router.post("/create-checkout-session", userAuth, async (req, res, next) => {
             payment_method_types: ["card"],
             line_items: line,
             mode: "payment",
+
             success_url: `${client_domain}/user/payment/success`,
             cancel_url:  `${client_domain}/user/payment/cancel`,
         });
           // Calculate total price
-          const totalPrice = products.reduce((total, product) => {
-            return total + (product.foodId.price * product.quantity);
-        }, 0);
-
+          const totalPrice = finalprice;
+console.log("maaaaaaangilyyy",totalPrice )
         // Prepare the food items for saving in the order model
         const foodItems = products.map((product) => ({
             foodId: product.foodId._id, // Save only the foodId reference

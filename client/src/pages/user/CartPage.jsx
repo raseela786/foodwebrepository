@@ -3,9 +3,11 @@ import { axiosInstance } from '../../config/axiosinstance';
 import { CartCards } from '../../components/Cards';
 import { loadStripe } from "@stripe/stripe-js";
 import toast from 'react-hot-toast';
-import  {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+
 export const CartPage = () => {
+  const [loadingSubtotal, setLoadingSubtotal] = useState(true);
   const [cartItems, setCartItems] = useState([]);
   const [cartData, setCartData] = useState({});
   const [loading, setLoading] = useState(false);
@@ -16,9 +18,11 @@ export const CartPage = () => {
   const [redirecting, setRedirecting] = useState(false);
   const [availableCoupons, setAvailableCoupons] = useState([]); // To hold the available coupons
   const [selectedCoupon, setSelectedCoupon] = useState(null); // To hold the selected coupon
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+
   // Fetch cart items from API
   const fetchCartItems = async () => {
+    setLoadingSubtotal(true); // Start loading
     try {
       const response = await axiosInstance({
         method: "GET",
@@ -29,6 +33,8 @@ export const CartPage = () => {
       setFinalAmount(response?.data?.data?.totalPrice);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoadingSubtotal(false); // End loading
     }
   };
 
@@ -61,6 +67,10 @@ export const CartPage = () => {
       return item;
     });
     setCartItems(updatedCartItems);
+
+    // Recalculate total amount after quantity update
+    const updatedTotal = calculateTotal();
+    setFinalAmount(updatedTotal);
   };
 
   // Calculate the total price (subtotal + shipping + taxes - discount)
@@ -68,23 +78,23 @@ export const CartPage = () => {
     const subtotal = cartItems.reduce((total, item) => {
       return total + item?.foodId?.price * item?.quantity;
     }, 0);
-    
     return subtotal - discount;
   };
- // Fetch available coupons based on subtotal
- const fetchAvailableCoupons = async () => {
-  const subtotal = calculateTotal();
-  try {
-    const response = await axiosInstance.post("/coupons/getcoupons", { subtotal });
-    if (response.data.success) {
-      setAvailableCoupons(response.data.coupons);
-    } else {
-      setAvailableCoupons([]); // Clear the list if no coupons available
+
+  // Fetch available coupons based on subtotal
+  const fetchAvailableCoupons = async () => {
+    const subtotal = calculateTotal();
+    try {
+      const response = await axiosInstance.post("/coupons/getcoupons", { subtotal });
+      if (response.data.success) {
+        setAvailableCoupons(response.data.coupons);
+      } else {
+        setAvailableCoupons([]); // Clear the list if no coupons available
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-   console.log(error)
-  }
-};
+  };
 
   // Handle payment
   const makePayment = async () => {
@@ -96,9 +106,11 @@ export const CartPage = () => {
       const session = await axiosInstance({
         url: "/payment/create-checkout-session",
         method: "POST",
-        data:
-         { products: cartItems ,
-         finalprice:finalAmount}
+        data: {
+          products: cartItems,
+          finalprice: finalAmount,
+          discounts: discount,
+        },
       });
 
       const result = await stripe.redirectToCheckout({
@@ -115,41 +127,53 @@ export const CartPage = () => {
     }
   };
 
+  // Handle success redirect
+  const handleSuccessRedirect = () => {
+    clearCart(); // Clear the cart in the frontend
+    navigate("/"); // Redirect to home or success page
+    toast.success("Order placed");
+  };
 
-const handleSuccessRedirect = () => {
-  clearCart(); // Clear the cart in the frontend
-  navigate("/");
-  toast.success("order placed") // Redirect to success page
-};
-const clearCart = () => {
-  setCartItems([]); // Update cart items in state
-  localStorage.removeItem("cart"); // Clear cart in local storage
-};
-const applyCoupon = async () => {
-  if (!selectedCoupon) {
-    toast.error("Please select a coupon");
-    return;
-  }
-  try {
-    const response = await axiosInstance.post("/coupons/apply", {
-      couponCode: selectedCoupon.code,
-      cartId: cartData._id,
-    });
+  // Clear cart from frontend and localStorage
+  const clearCart = () => {
+    setCartItems([]); // Update cart items in state
+    localStorage.removeItem("cart"); // Clear cart in local storage
+  };
 
-    if (response.data.message === "Coupon applied successfully") {
-      const { finalAmount: updatedFinalAmount, discount: appliedDiscount } = response.data;
-
-      setDiscount(appliedDiscount || 0);
-      setFinalAmount(updatedFinalAmount || cartData.totalPrice);
-      toast.success("Coupon applied successfully!");
+  // Apply coupon
+  const applyCoupon = async () => {
+    if (!selectedCoupon) {
+      toast.error("Please select a coupon");
+      return;
     }
-  } catch (error) {
-    toast.error(error.response?.data?.message || "Failed to apply coupon.");
-  }
-};
+    try {
+      const response = await axiosInstance.post("/coupons/apply", {
+        couponCode: selectedCoupon.code,
+        cartId: cartData._id,
+      });
+
+      if (response.data.message === "Coupon applied successfully") {
+        const { finalAmount: updatedFinalAmount, discount: appliedDiscount } = response.data;
+
+        setDiscount(appliedDiscount || 0);
+        setFinalAmount(updatedFinalAmount || calculateTotal()); // Recalculate final amount
+        toast.success("Coupon applied successfully!");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to apply coupon.");
+    }
+  };
+
+  // Recalculate finalAmount whenever cartItems or discount change
+  useEffect(() => {
+    const updatedTotal = calculateTotal();
+    setFinalAmount(updatedTotal);
+  }, [cartItems, discount]); // Recalculate when cartItems or discount change
+
   useEffect(() => {
     fetchCartItems();
   }, []);
+
   useEffect(() => {
     fetchAvailableCoupons();
   }, [cartItems, discount]); // Re-fetch available coupons when cart items or discount change
@@ -176,7 +200,9 @@ const applyCoupon = async () => {
         {/* Price Details */}
         <div className="flex justify-between text-gray-700">
           <span className="font-medium">Subtotal:</span>
-          <span className="font-semibold">{calculateTotal().toFixed(2)}</span>
+          <span className="font-semibold">
+            {loadingSubtotal ? "Loading..." : calculateTotal().toFixed(2)}
+          </span>
         </div>
 
         {/* Coupon Section */}
@@ -185,7 +211,6 @@ const applyCoupon = async () => {
           {availableCoupons.length > 0 ? (
             <div className="flex flex-col gap-2">
               {availableCoupons.map((coupon) => (
-                // Show only the selected coupon or allow selection of new coupon
                 <div key={coupon.code}>
                   {selectedCoupon && selectedCoupon.code === coupon.code ? (
                     <button
