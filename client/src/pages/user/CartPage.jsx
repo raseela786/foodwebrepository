@@ -30,7 +30,7 @@ export const CartPage = () => {
       });
       setCartItems(response?.data?.data?.foodItems);
       setCartData(response.data?.data);
-      setFinalAmount(response?.data?.data?.totalPrice);
+      setFinalAmount(response?.data?.data.totalPrice);
     } catch (error) {
       console.log(error);
     } finally {
@@ -58,7 +58,7 @@ export const CartPage = () => {
     }
   };
 
-  // Update quantity of a cart item
+  // Handle update of cart item quantity
   const handleUpdateQuantity = (itemId, newQuantity) => {
     const updatedCartItems = cartItems.map((item) => {
       if (item.foodId._id === itemId) {
@@ -66,16 +66,16 @@ export const CartPage = () => {
       }
       return item;
     });
+    
     setCartItems(updatedCartItems);
 
-    // Recalculate total amount after quantity update
-    const updatedTotal = calculateTotal();
     setFinalAmount(updatedTotal);
+
   };
 
-  // Calculate the total price (subtotal + shipping + taxes - discount)
-  const calculateTotal = () => {
-    const subtotal = cartItems.reduce((total, item) => {
+  // Calculate total price (subtotal + shipping + taxes - discount)
+  const calculateTotal = (items) => {
+    const subtotal = items.reduce((total, item) => {
       return total + item?.foodId?.price * item?.quantity;
     }, 0);
     return subtotal - discount;
@@ -83,7 +83,7 @@ export const CartPage = () => {
 
   // Fetch available coupons based on subtotal
   const fetchAvailableCoupons = async () => {
-    const subtotal = calculateTotal();
+    const subtotal = calculateTotal(cartItems);
     try {
       const response = await axiosInstance.post("/coupons/getcoupons", { subtotal });
       if (response.data.success) {
@@ -93,6 +93,32 @@ export const CartPage = () => {
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  // Apply coupon
+  const applyCoupon = async () => {
+    if (!selectedCoupon) {
+      toast.error("Please select a coupon");
+      return;
+    }
+    try {
+      const response = await axiosInstance.post("/coupons/apply", {
+        couponCode: selectedCoupon.code,
+        cartId: cartData._id,
+      });
+
+      if (response.data.message === "Coupon applied successfully") {
+        const { finalAmount: updatedFinalAmount, discount: appliedDiscount } = response.data;
+
+        // Set the new discount and finalAmount
+        setDiscount(appliedDiscount || 0);
+        setFinalAmount(updatedFinalAmount || calculateTotal(cartItems)); // Recalculate final amount
+
+        toast.success("Coupon applied successfully!");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to apply coupon.");
     }
   };
 
@@ -140,33 +166,9 @@ export const CartPage = () => {
     localStorage.removeItem("cart"); // Clear cart in local storage
   };
 
-  // Apply coupon
-  const applyCoupon = async () => {
-    if (!selectedCoupon) {
-      toast.error("Please select a coupon");
-      return;
-    }
-    try {
-      const response = await axiosInstance.post("/coupons/apply", {
-        couponCode: selectedCoupon.code,
-        cartId: cartData._id,
-      });
-
-      if (response.data.message === "Coupon applied successfully") {
-        const { finalAmount: updatedFinalAmount, discount: appliedDiscount } = response.data;
-
-        setDiscount(appliedDiscount || 0);
-        setFinalAmount(updatedFinalAmount || calculateTotal()); // Recalculate final amount
-        toast.success("Coupon applied successfully!");
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to apply coupon.");
-    }
-  };
-
   // Recalculate finalAmount whenever cartItems or discount change
   useEffect(() => {
-    const updatedTotal = calculateTotal();
+    const updatedTotal = calculateTotal(cartItems);
     setFinalAmount(updatedTotal);
   }, [cartItems, discount]); // Recalculate when cartItems or discount change
 
@@ -201,7 +203,7 @@ export const CartPage = () => {
         <div className="flex justify-between text-gray-700">
           <span className="font-medium">Subtotal:</span>
           <span className="font-semibold">
-            {loadingSubtotal ? "Loading..." : calculateTotal().toFixed(2)}
+            {loadingSubtotal ? "Loading..." : calculateTotal(cartItems).toFixed(2)}
           </span>
         </div>
 

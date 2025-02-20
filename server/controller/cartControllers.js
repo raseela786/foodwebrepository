@@ -99,5 +99,43 @@ const clearcart = async (req, res) => {
         res.status(500).json({ message: 'Failed to clear cart' });
     }
 };
-
-module.exports = { addToCart, removeFromCart, getCart ,clearcart};
+const updateQuantityInCart = async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { foodId, quantity } = req.body;
+  
+      // Find the user's cart
+      let cart = await Cart.findOne({ userId });
+      if (!cart) {
+        return res.status(404).json({ message: "Cart not found" });
+      }
+  
+      // Find the food item in the cart
+      const foodItemIndex = cart.foodItems.findIndex(
+        (item) => item.foodId.toString() === foodId
+      );
+      
+      if (foodItemIndex === -1) {
+        return res.status(404).json({ message: "Food item not found in cart" });
+      }
+  
+      // Update the quantity of the food item in the cart
+      cart.foodItems[foodItemIndex].quantity = quantity;
+  
+      // Recalculate the total price
+      cart.calculateTotalPrice();
+  
+      // Save the updated cart
+      await cart.save();
+  
+      res.status(200).json({
+        success: true,
+        message: "Cart updated successfully",
+        data: cart,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error", error });
+    }
+  };
+  
+module.exports = { addToCart, removeFromCart, getCart ,clearcart,updateQuantityInCart};

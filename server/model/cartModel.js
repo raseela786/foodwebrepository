@@ -35,8 +35,10 @@ const cartSchema = new mongoose.Schema(
 );
 
 cartSchema.methods.calculateTotalPrice = function () {
-    this.totalPrice = this.foodItems.reduce((total, course) => total + course.price, 0);
+    this.totalPrice = this.foodItems.reduce((total, course) =>
+         total +( course.price*course.quantity), 0);
 };
+
 
 const Cart = mongoose.model('Cart', cartSchema);
 
