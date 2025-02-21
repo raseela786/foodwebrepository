@@ -15,6 +15,6 @@ router.get("/userList")
 router.get("/userProfile",userAuth,userProfilePic);
 router.get("/check-user",userAuth,checkUser);
 router.put("/update");
-router.put("/update/:userId",userAuth,updateProfile);
+router.put("/update/:userId",userAuth,upload.single('image'),updateProfile);
 router.delete("/delete") 
 module.exports={userRouter:router} 

@@ -29,6 +29,7 @@ export const AdminLayout = () => {
         );
        
    dispatch(saveUser())
+   setLoaading(false);
        
 }
 catch(error)

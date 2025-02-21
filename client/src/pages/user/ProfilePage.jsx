@@ -6,6 +6,7 @@ export const ProfilePage = () => {
     const [user, setUser] = useState({});
     const [isEditing, setIsEditing] = useState(false);
     const [editedUser, setEditedUser] = useState({});
+    const [profilePic, setProfilePic] = useState(null); // State to handle image preview
     const navigate = useNavigate();
     const { id } = useParams();
 
@@ -41,6 +42,7 @@ export const ProfilePage = () => {
         if (!isEditing) {
             // Sync editedUser state with user data when entering edit mode
             setEditedUser({ ...user });
+            setProfilePic(user?.image || null); // Set initial profile image for editing
         }
     };
 
@@ -53,13 +55,38 @@ export const ProfilePage = () => {
         }));
     };
 
+    // Handle image change
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfilePic(URL.createObjectURL(file)); // Show preview of the selected image
+            setEditedUser((prevUser) => ({
+                ...prevUser,
+                image: file, // Save the file to editedUser state
+            }));
+        }
+    };
+
     // Handle saving the changes to the server
     const handleSave = async () => {
+        const formData = new FormData();
+        formData.append("name", editedUser?.name);
+        formData.append("email", editedUser?.email);
+        formData.append("password", editedUser?.password);
+        formData.append("phone", editedUser?.phone);
+
+        if (editedUser?.image) {
+            formData.append("image", editedUser?.image); // Add image to form data if present
+        }
+
         try {
             await axiosInstance({
                 method: "PUT",
                 url: `/user/update/${user?._id}`,
-                data: editedUser,
+                data: formData,
+                headers: {
+                    "Content-Type": "multipart/form-data", // Set content type for file upload
+                },
             });
 
             setUser(editedUser); // Update user state with edited values
@@ -72,6 +99,7 @@ export const ProfilePage = () => {
     // Handle cancel button click, revert the edited user back to the original state
     const handleCancel = () => {
         setEditedUser(user); // Revert to original user data
+        setProfilePic(user?.image || null); // Revert profile picture
         setIsEditing(false);  // Exit edit mode
     };
 
@@ -84,6 +112,7 @@ export const ProfilePage = () => {
     useEffect(() => {
         if (user) {
             setEditedUser(user); // Populate editedUser with fetched user data
+            setProfilePic(user?.image || null); // Set initial profile image
         }
     }, [user]);
 
@@ -91,6 +120,45 @@ export const ProfilePage = () => {
         <div className="min-h-screen flex flex-col items-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
                 <div className="text-center mb-4">
+                    {/* Display profile image */}
+                    <div className="mb-4">
+                        {isEditing ? (
+                            <div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="w-full mb-4"
+                                />
+                                {profilePic ? (
+                                    <img
+                                        src={profilePic}
+                                        alt="Profile"
+                                        className="w-24 h-24 rounded-full mx-auto object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto flex items-center justify-center">
+                                        <span className="text-xl text-white">No Image</span>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div>
+                                {user?.image ? (
+                                    <img
+                                        src={user?.image}
+                                        alt="Profile"
+                                        className="w-24 h-24 rounded-full mx-auto object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto flex items-center justify-center">
+                                        <span className="text-xl text-white">No Image</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
                     {isEditing ? (
                         <div>
                             <input
@@ -130,7 +198,6 @@ export const ProfilePage = () => {
                         <div>
                             <h1 className="text-2xl font-semibold text-gray-800">{user?.name}</h1>
                             <p className="text-sm text-gray-500">{user?.email}</p>
-                           
                             <p className="text-sm text-gray-500">{user?.phone}</p>
                         </div>
                     )}

@@ -166,7 +166,7 @@ res.json({Success:true,message:"user login successfully"})
                         const {userId} = req.params;
                 
                         const { name, email, password,phone} = req.body;
-                      
+                        let imageUrl;
                 
                         const isUserExist = await User.findOne({_id:userId});
                 
@@ -174,6 +174,9 @@ res.json({Success:true,message:"user login successfully"})
                             return res.status(400).json({ success: false, message: "user does not exist" });
                         }
                 
+        if (req.file) {
+            imageUrl = await handleImageUpload1(req.file.path);
+        }
                        
                       const updatedUser= await User.findOneAndUpdate({_id:userId},{name, email, password,phone},{new:true,upsert:true})
                 
