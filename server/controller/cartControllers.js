@@ -56,8 +56,8 @@ console.log("fooooooooooooooooooooooooooooood from frot ed",{ foodId })
         cart.foodItems = cart.foodItems.filter((item) => item.foodId !=foodId);
 
         // Recalculate the total price
-        cart.calculateTotalPrice();
-        
+      const cc =  cart.calculateTotalPrice();
+        console.log("remove updated price",cc)
 
         // Save the cart
         await cart.save();
@@ -99,10 +99,14 @@ const clearcart = async (req, res) => {
         res.status(500).json({ message: 'Failed to clear cart' });
     }
 };
-const updateQuantityInCart = async (req, res) => {
+
+const updateQuantity = async (req, res) => {
     try {
-      const userId = req.user.id;
-      const { foodId, quantity } = req.body;
+      const userId = req.user.id; // Assuming you're using some kind of authentication middleware
+      const { foodId, quantity ,totalPrices} = req.body; // Destructure foodId and quantity from the request body
+      console.log("Update quantity of cart item user id", userId);
+      console.log("FoodId:", foodId);
+     console.log("totalPrices",totalPrices);
   
       // Find the user's cart
       let cart = await Cart.findOne({ userId });
@@ -111,31 +115,31 @@ const updateQuantityInCart = async (req, res) => {
       }
   
       // Find the food item in the cart
-      const foodItemIndex = cart.foodItems.findIndex(
-        (item) => item.foodId.toString() === foodId
-      );
-      
-      if (foodItemIndex === -1) {
+      const cartItem = cart.foodItems.find((item) => item.foodId.toString() === foodId.toString());
+      if (!cartItem) {
         return res.status(404).json({ message: "Food item not found in cart" });
       }
   
-      // Update the quantity of the food item in the cart
-      cart.foodItems[foodItemIndex].quantity = quantity;
+      // Update the quantity
+      cartItem.quantity = quantity;
   
-      // Recalculate the total price
-      cart.calculateTotalPrice();
+      // Recalculate the total price of the cart based on updated quantities
+      let totalPrice = cart.foodItems.reduce((total, item) => {
+        return total + (item.foodId.price * item.quantity); // Calculate the total by multiplying food price and quantity
+      }, 0);
+     
+      // Update the total price in the cart
+      cart.totalPrice = totalPrices;
   
       // Save the updated cart
       await cart.save();
   
-      res.status(200).json({
-        success: true,
-        message: "Cart updated successfully",
-        data: cart,
-      });
+      // Return the updated cart data including the total price
+      res.status(200).json({ message: "Quantity updated successfully", cart });
     } catch (error) {
+      console.error(error);
       res.status(500).json({ message: "Internal server error", error });
     }
   };
   
-module.exports = { addToCart, removeFromCart, getCart ,clearcart,updateQuantityInCart};
+module.exports = { addToCart, removeFromCart, getCart ,clearcart,updateQuantity};

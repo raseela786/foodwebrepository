@@ -1,42 +1,41 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-
 export const FoodCards = ({ food }) => {
   return (
-    <div className="max-w-xs bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:scale-105">
-      {/* Image */}
-      <figure className="relative">
+    <div className="relative rounded-2xl overflow-hidden transition-all duration-300 ease-in-out">
+      {/* Image Section */}
+      <div className="relative rounded-t-2xl overflow-hidden">
         <img
           src={food.image}
           alt={food.title}
-          className="w-full h-48 object-cover rounded-t-lg"
+          className="w-full h-48 object-cover rounded-t-2xl transform transition-all duration-300 ease-in-out hover:scale-110"
         />
         {/* Hotel Badge */}
-        <div className="absolute top-4 left-4 bg-white text-black py-1 px-4 rounded-full shadow-md text-sm font-semibold">
+        <div className="absolute top-4 left-4 bg-blue-600 text-white py-1 px-4 rounded-full shadow-md text-xs font-semibold">
           {food.hotel}
         </div>
-      </figure>
+      </div>
 
-      {/* Card Body */}
-      <div className="p-6 space-y-3">
+      {/* Card Content */}
+      <div className="p-4 space-y-4">
         {/* Food Title */}
-        <h2 className="text-xl font-semibold text-gray-800 truncate">{food.title}</h2>
+        <h2 className="text-lg font-semibold text-gray-800 truncate">{food.title}</h2>
 
         {/* Price */}
-        <p className="text-lg font-medium text-green-600">{food.price}</p>
+        <p className="text-xl font-medium text-green-600">{`$${food.price.toFixed(2)}`}</p>
 
         {/* More Details Button */}
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-between items-center mt-4">
           <Link to={`/fooditem-details/${food?._id}/${food.hotel}`}>
-            <button className="px-4 py-2 bg-blue-600 text-white text-sm rounded-full hover:bg-blue-700 transition-colors duration-200">
-              More details
+            <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm rounded-full hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 transition-colors duration-300">
+              More Details
             </button>
           </Link>
         </div>
       </div>
     </div>
   );
-}
+};
 
 
 export const CartCards = ({ item, product,onRemove,onUpdateQuantity }) => {

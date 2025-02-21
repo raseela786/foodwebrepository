@@ -58,19 +58,31 @@ export const CartPage = () => {
     }
   };
 
-  // Handle update of cart item quantity
-  const handleUpdateQuantity = (itemId, newQuantity) => {
+  const handleUpdateQuantity = async (itemId, newQuantity) => {
     const updatedCartItems = cartItems.map((item) => {
       if (item.foodId._id === itemId) {
-        return { ...item, quantity: newQuantity };
+        return { ...item, quantity: newQuantity }; // Update the quantity locally
       }
       return item;
     });
     
     setCartItems(updatedCartItems);
-
-    setFinalAmount(updatedTotal);
-
+  
+    // Send updated quantity to the backend
+    try {
+      const response = await axiosInstance({
+        method: "PUT",
+        url: "/cart/update-quantity", // Endpoint for updating quantity
+        data: { foodId: itemId, quantity: newQuantity ,totalPrices:finalAmount}, // Send the updated foodId and quantity
+      });
+  
+      // After updating, you might want to update the final amount as returned from backend
+      setFinalAmount(response.data.cart.totalPrice); // Update the final price based on backend response
+  
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      toast.error("Failed to update quantity.");
+    }
   };
 
   // Calculate total price (subtotal + shipping + taxes - discount)
