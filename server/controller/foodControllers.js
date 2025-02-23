@@ -52,9 +52,11 @@ const updateFood = async (req, res, next) => {
         if (req.file) {
             imageUrl = await handleImageUpload1(req.file.path);
         }
-
+console.log("puthiya image",imageUrl);
        
-      const updatedFood= await Food.findOneAndUpdate({_id:foodId},{title,description,price,hotel},{new:true,upsert:true})
+      const updatedFood= await Food.findOneAndUpdate({_id:foodId},
+        {title,description,price,hotel, image: imageUrl },
+        {new:true,upsert:true})
 
         res.status(201).json({ success: true, message: "fooditem updated successfully",data:updatedFood });
     } catch (error) {

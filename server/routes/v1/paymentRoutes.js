@@ -16,7 +16,7 @@ router.post("/create-checkout-session", userAuth, async (req, res, next) => {
         // Log the request to ensure that you're not processing multiple requests for the same session
         console.log("Creating checkout session with products: ", products);
         console.log("final priceeeeeeeeee",finalprice);
-        console.log("final priceeeeeeeeee",discounts);
+        console.log("final discounts",discounts);
         const line = products.map((product) => ({
             price_data: {
                 currency: "inr",

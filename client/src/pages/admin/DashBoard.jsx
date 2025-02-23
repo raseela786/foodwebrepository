@@ -113,6 +113,9 @@ export const DashBoard = () => {
           method: 'PUT',
           url: `/food/update/${selectedFood._id}`,
           data: updatedData,
+          headers: {
+            'Content-Type': 'multipart/form-data', // Important header for file uploads
+          },
         });
 
         toast.success('Food updated successfully!');

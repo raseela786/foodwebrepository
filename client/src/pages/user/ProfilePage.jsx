@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../config/axiosinstance";
 import { useNavigate, useParams } from 'react-router-dom';
 
+import toast from "react-hot-toast";
+
 export const ProfilePage = () => {
     const [user, setUser] = useState({});
     const [isEditing, setIsEditing] = useState(false);
@@ -88,7 +90,9 @@ export const ProfilePage = () => {
                     "Content-Type": "multipart/form-data", // Set content type for file upload
                 },
             });
-
+    toast.success("user details updated successfully");
+           fetchUserProfile();
+        
             setUser(editedUser); // Update user state with edited values
             setIsEditing(false);  // Exit edit mode
         } catch (error) {

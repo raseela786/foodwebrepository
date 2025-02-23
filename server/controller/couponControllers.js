@@ -193,6 +193,7 @@ console.log("Cart total price after calculation:", cart.totalPrice);
     return res.status(200).json({
       message: 'Coupon applied successfully',
       finalAmount: amountToPay,
+      discount:discount,
     });
   } catch (error) {
     console.error('Error applying coupon:', error);

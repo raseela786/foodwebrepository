@@ -121,10 +121,10 @@ export const CartPage = () => {
       });
 
       if (response.data.message === "Coupon applied successfully") {
-        const { finalAmount: updatedFinalAmount, discount: appliedDiscount } = response.data;
+        const { finalAmount: updatedFinalAmount, discount: discount } = response.data;
 
         // Set the new discount and finalAmount
-        setDiscount(appliedDiscount || 0);
+        setDiscount(discount || 0);
         setFinalAmount(updatedFinalAmount || calculateTotal(cartItems)); // Recalculate final amount
 
         toast.success("Coupon applied successfully!");
