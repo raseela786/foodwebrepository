@@ -183,10 +183,10 @@ console.log("Cart total price after calculation:", cart.totalPrice);
 
     const discount = (cart.totalPrice * coupon.discount) / 100;
     console.log("Calculated discount:", discount);
-
+const coupondis=coupon.discount;
     const finalAmount = cart.totalPrice - discount;
     console.log("Final amount after applying discount:", finalAmount);
-
+console.log(coupondis);
     const amountToPay = finalAmount < 0 ? 0 : finalAmount;
     cart.totalPrice = amountToPay;
     await cart.save();
@@ -194,6 +194,8 @@ console.log("Cart total price after calculation:", cart.totalPrice);
       message: 'Coupon applied successfully',
       finalAmount: amountToPay,
       discount:discount,
+
+      discountindiv:coupondis,
     });
   } catch (error) {
     console.error('Error applying coupon:', error);

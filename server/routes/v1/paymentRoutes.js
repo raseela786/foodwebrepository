@@ -11,12 +11,24 @@ const router = express.Router();
 
 router.post("/create-checkout-session", userAuth, async (req, res, next) => {
     try {
-        const { products,finalprice,discounts} = req.body;
+        const { products,discounts,finalprice,discountindiv} = req.body;
 
         // Log the request to ensure that you're not processing multiple requests for the same session
         console.log("Creating checkout session with products: ", products);
         console.log("final priceeeeeeeeee",finalprice);
         console.log("final discounts",discounts);
+        if (!products || !Array.isArray(products) || products.length === 0) {
+            return res.status(400).json({ success: false, message: "Cart items are required." });
+          }
+      
+          // ✅ Calculate total price before discount
+          const totalAmountInINR = products.reduce(
+            (total, item) => total + item.foodId.price * item.quantity,
+            0
+          );
+          const finalAmountInINR = Math.max(finalprice.toFixed(2), 0);
+          const totalAmountInPaise = Math.round(finalAmountInINR * 100); // Convert to paise
+          const discountFactor = finalAmountInINR / totalAmountInINR;
         const line = products.map((product) => ({
             price_data: {
                 currency: "inr",
@@ -24,7 +36,9 @@ router.post("/create-checkout-session", userAuth, async (req, res, next) => {
                     name: product.foodId.title,
                     images: [product.foodId.image],
                 },
-                unit_amount: Math.round(product.foodId.price * 100),
+              
+                //it_amount: Math.round((product.foodId.price - discountindiv) * 100),
+                unit_amount: Math.round(product.foodId.price * discountFactor * 100), 
             },
             quantity: product.quantity || 1,// Default to 1 if no valid quantity is provided
         }));

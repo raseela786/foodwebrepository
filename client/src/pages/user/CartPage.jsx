@@ -13,6 +13,7 @@ export const CartPage = () => {
   const [loading, setLoading] = useState(false);
   const [couponCode, setCouponCode] = useState(""); // State for coupon code
   const [discount, setDiscount] = useState(0); // State for discount applied
+  const [discountindiv, setDiscountindiv] = useState(0);
   const [finalAmount, setFinalAmount] = useState(0);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
@@ -121,13 +122,14 @@ export const CartPage = () => {
       });
 
       if (response.data.message === "Coupon applied successfully") {
-        const { finalAmount: updatedFinalAmount, discount: discount } = response.data;
+        const { finalAmount: updatedFinalAmount, discount: discount,discountindiv: discountindiv } = response.data;
 
         // Set the new discount and finalAmount
         setDiscount(discount || 0);
         setFinalAmount(updatedFinalAmount || calculateTotal(cartItems)); // Recalculate final amount
-
+setDiscountindiv(discountindiv || 0 );
         toast.success("Coupon applied successfully!");
+  
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to apply coupon.");
@@ -148,6 +150,7 @@ export const CartPage = () => {
           products: cartItems,
           finalprice: finalAmount,
           discounts: discount,
+          discountindiv:discountindiv
         },
       });
 
