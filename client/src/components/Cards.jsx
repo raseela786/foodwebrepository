@@ -72,14 +72,14 @@ export const CartCards = ({ item, product,onRemove,onUpdateQuantity }) => {
       <div className="flex items-center gap-2">
         <button
           onClick={() => handleQuantityChange("decrement")}
-          className="px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"
+          className="px-2 py-1 bg-yellow-500 rounded-full hover:bg-red-500 transition-colors"
         >
           -
         </button>
         <span className="text-lg">{item?.quantity}</span>
         <button
           onClick={() => handleQuantityChange("increment")}
-          className="px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"
+          className="px-2 py-1 bg-yellow-500 rounded-full hover:bg-red-500 transition-colors"
         >
           +
         </button>

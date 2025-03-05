@@ -79,7 +79,6 @@ export const CartPage = () => {
   
       // After updating, you might want to update the final amount as returned from backend
       setFinalAmount(response.data.cart.totalPrice); // Update the final price based on backend response
-  
     } catch (error) {
       console.error("Error updating quantity:", error);
       toast.error("Failed to update quantity.");
@@ -122,14 +121,13 @@ export const CartPage = () => {
       });
 
       if (response.data.message === "Coupon applied successfully") {
-        const { finalAmount: updatedFinalAmount, discount: discount,discountindiv: discountindiv } = response.data;
+        const { finalAmount: updatedFinalAmount, discount: discount, discountindiv: discountindiv } = response.data;
 
         // Set the new discount and finalAmount
         setDiscount(discount || 0);
         setFinalAmount(updatedFinalAmount || calculateTotal(cartItems)); // Recalculate final amount
-setDiscountindiv(discountindiv || 0 );
+        setDiscountindiv(discountindiv || 0 );
         toast.success("Coupon applied successfully!");
-  
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to apply coupon.");
@@ -196,10 +194,10 @@ setDiscountindiv(discountindiv || 0 );
   }, [cartItems, discount]); // Re-fetch available coupons when cart items or discount change
 
   return (
-    <div className="flex gap-10 px-10 py-10">
+    <div className="flex flex-col md:flex-row gap-10 px-4 py-10">
       {/* Cart Items Section */}
-      <div className="w-8/12">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Your Cart</h1>
+      <div className="w-full md:w-8/12">
+        <h1 className="text-3xl font-bold text-gray-400 mb-6">Your Cart</h1>
         {cartItems.map((value, index) => (
           <CartCards
             key={index}
@@ -211,7 +209,7 @@ setDiscountindiv(discountindiv || 0 );
       </div>
 
       {/* Price Summary Section */}
-      <div className="w-4/12 bg-white rounded-lg shadow-md p-6 flex flex-col gap-6">
+      <div className="w-full md:w-4/12 bg-white rounded-lg shadow-md p-6 flex flex-col gap-6 mt-6 md:mt-0">
         <h2 className="text-2xl font-semibold text-gray-800">Price Summary</h2>
 
         {/* Price Details */}
@@ -224,7 +222,7 @@ setDiscountindiv(discountindiv || 0 );
 
         {/* Coupon Section */}
         <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Available Coupons</h3>
+          <h3 className="text-lg font-semibold mb-2 text-gray-700">Available Coupons</h3>
           {availableCoupons.length > 0 ? (
             <div className="flex flex-col gap-2">
               {availableCoupons.map((coupon) => (
@@ -255,7 +253,7 @@ setDiscountindiv(discountindiv || 0 );
         {/* Apply Coupon Button */}
         <button
           onClick={applyCoupon}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4"
+          className="bg-red-600 text-white px-4 py-2 rounded-lg mt-4"
           disabled={!selectedCoupon}
         >
           Apply Coupon
@@ -268,8 +266,8 @@ setDiscountindiv(discountindiv || 0 );
         </div>
 
         {/* Checkout Button */}
-        <button onClick={makePayment} disabled={loading}>
-          {loading ? "Processing Payment..." : "Pay Now"}
+        <button onClick={makePayment} disabled={loading} className="mt-6 w-full bg-red-600 text-white py-2 rounded-lg">
+          {loading ? "Processing Payment..." : "Proceed to Payment"}
         </button>
       </div>
     </div>

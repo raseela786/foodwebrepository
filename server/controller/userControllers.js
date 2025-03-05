@@ -195,5 +195,16 @@ res.json({Success:true,message:"user login successfully"})
                       res.status(500).json({ message: "Failed to fetch profile" });
                     }
                   };
-                  
-module.exports={userSignup,userLogin,userLogout,userProfile,checkUser,userProfiles,updateProfile,userProfilePic}
+                  const delteuser = async (req, res, next) => {
+                    try {
+                        const {userId} = req.params;
+                   
+                    const userDeleted= await User.findByIdAndDelete({_id:userId});
+                    if(!userDeleted)
+                        return res.status(400).json({ success: true, message: "user details already deleted" });  
+                    res.status(200).json({ success: true, message: " deleted successfully"});
+                    }
+                     catch (error) {
+                        next(error);
+                    }};
+module.exports={userSignup,userLogin,userLogout,userProfile,checkUser,userProfiles,updateProfile,userProfilePic,delteuser}

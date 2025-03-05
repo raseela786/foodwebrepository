@@ -6,7 +6,7 @@ const addHotel = async (req, res, next) => {
         const user = req.user;
 
         const {name, description, location,mobile} = req.body;
- 
+
         if (!name || !description  || !mobile || !location) {
             return res.status(400).json({ message: "all fields required" });
         }
@@ -26,6 +26,14 @@ const addHotel = async (req, res, next) => {
 
         res.status(201).json({ success: true, message: "hotel added successfully" });
         
+    } catch (error) {
+        next(error);
+    }
+};
+const getHotels = async (req, res, next) => {
+    try {
+        const hotels = await Hotel.find();  // Assuming the Hotel model has the names
+        res.status(200).json(hotels);
     } catch (error) {
         next(error);
     }
@@ -84,4 +92,4 @@ const delteHotel = async (req, res, next) => {
             next(error);
         }
     };
-module.exports={addHotel,updateHotel,delteHotel,getHotelList,gethotelDetails};
+module.exports={addHotel,updateHotel,delteHotel,getHotelList,gethotelDetails,getHotels};

@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{ useState, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -6,10 +6,29 @@ import { axiosInstance } from '../../config/axiosinstance';
 
 
 export const FoodAddingPage = () => {
-
+  const [hotels, setHotels] = useState([]);  // State to store hotel list
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
-
+ // Fetch the list of hotels on component mount
+ useEffect(() => {
+  const fetchHotels = async () => {
+    try {
+      
+      const response = await axiosInstance({
+        method: "GET",
+        url: "/hotel/hotelnamelist",
+    // Adjust URL if needed
+    
+    })
+    setHotels(response.data);  // Set hotels to state
+  } catch (error) {
+      console.error("Error fetching hotels:", error);
+      toast.error("Failed to load hotels.");
+    }
+  };
+  
+  fetchHotels();
+}, []);
   const onSubmit = async (data) => {
     try {
       // Create FormData object to handle file upload
@@ -20,6 +39,10 @@ export const FoodAddingPage = () => {
       formData.append('hotel', data.hotel);
       formData.append('image', data.image[0]); // Assuming only one image is selected
 
+    // Log the FormData content to inspect it
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
       const response = await axiosInstance({
         method: "POST",
         url: "/food/create",
@@ -64,12 +87,25 @@ export const FoodAddingPage = () => {
               </label>
               <input type="text" {...register('price')} placeholder="price" className="input input-bordered" required />
             </div>
-            <div className="form-control">
+         {/* Hotel Selection Dropdown */}
+         <div className="form-control">
               <label className="label">
                 <span className="label-text">Hotel Name</span>
               </label>
-              <input type="text" {...register('hotel')} placeholder="hotel" className="input input-bordered" required />
+              <select {...register('hotel')} className="input input-bordered" required>
+                <option value="">Select a hotel</option>
+                {hotels.length > 0 ? (
+                  hotels.map((hotel) => (
+                    <option key={hotel.id} value={hotel.id}>
+                      {hotel.name} {/* Assuming 'id' is the hotel's identifier and 'name' is the hotel's name */}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>Loading hotels...</option>
+                )}
+              </select>
             </div>
+
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Picture</span>

@@ -6,6 +6,7 @@ import { UserHeader } from '../components/user/Header'
 import { useDispatch, useSelector } from 'react-redux'
 import { axiosInstance } from '../config/axiosinstance'
 import { clearUser, saveUser } from '../redux/features/userSlice'
+import { FooterUser } from '../components/user/Footer'
 export const UserLayout = () => {
   const [loading,setLoaading]=useState(true);
   console.log("ussssssssssssserllllllllllllayou")
@@ -39,10 +40,18 @@ useEffect(()=>{
   checkuser();
 },[location.pathname])
 
-  return loading? null:  (
-    <div>
-     {isUserExist ? <UserHeader/>:<Header/>} 
-    <div className='min-h-96'><Outlet/></div>
-    <Footer/></div>
-  )
-}
+ 
+return loading ? null : (
+  <div>
+    {/* Conditionally render Header */}
+    {isUserExist ? <UserHeader /> : <Header />}
+
+    {/* Main Content Area */}
+    <div className='min-h-96'>
+      <Outlet /> {/* The main content will be rendered here */}
+    </div>
+
+    {/* Conditionally render Footer */}
+    {isUserExist ? <FooterUser /> : <Footer />}
+  </div>
+);}

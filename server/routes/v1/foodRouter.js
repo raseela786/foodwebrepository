@@ -1,7 +1,7 @@
 const express = require("express");
 
 const { upload } = require("../../middlewares/multer");
-const { createFood, updateFood, delteFood, getFooditemslist, getFoodsDetails } = require("../../controller/foodControllers");
+const { createFood, updateFood, delteFood, getFooditemslist, getFoodsDetails, getHotels } = require("../../controller/foodControllers");
 const { adminAuth } = require("../../middlewares/adminAuth");
 const {userAuth}= require("../../middlewares/userAuth")
 
@@ -13,4 +13,5 @@ router.delete("/delete/:foodId",adminAuth,delteFood);
 //router.get("/foodList",userAuth, getFooditemslist);
 router.get("/foodList", getFooditemslist);
 router.get("/foodDetails/:foodId",getFoodsDetails)
+
 module.exports = { foodRouter: router };
