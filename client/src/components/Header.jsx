@@ -75,7 +75,13 @@ export const Header = () => {
           >
             Menu
           </Link>
-
+<Link
+            to={"/hotelsr"}
+            className="text-lg text-white hover:bg-red-500 hover:text-white py-2 px-6 rounded-md transition duration-300"
+            onClick={toggleMenu} // Close the menu on click
+          >
+        Restaurants
+          </Link>
           {/* Login Link */}
           <Link
             to={"/login"}
