@@ -96,6 +96,7 @@ export const CartPage = () => {
   // Fetch available coupons based on subtotal
   const fetchAvailableCoupons = async () => {
     const subtotal = calculateTotal(cartItems);
+
     try {
       const response = await axiosInstance.post("/coupons/getcoupons", { subtotal });
       if (response.data.success) {

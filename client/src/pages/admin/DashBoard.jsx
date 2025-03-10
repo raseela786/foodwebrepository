@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { axiosInstance } from '../../config/axiosinstance';
 import { Link } from "react-router-dom";
-
+import { useForm } from "react-hook-form";
 export const DashBoard = () => {
   const [hotelDetails, setHotelDetails] = useState([]); // List of hotels
   const [foodDetails, setFoodDetails] = useState([]); // List of food items
@@ -10,7 +10,23 @@ export const DashBoard = () => {
   const [selectedFood, setSelectedFood] = useState(null); // Store selected food for editing
   const [isEditing, setIsEditing] = useState(false); // Track whether we are editing or not
   const [activeView, setActiveView] = useState(''); // Store active view
-
+    const [hotels, setHotels] = useState([]);
+      const { register, handleSubmit } = useForm();
+  const fetchHotelsname = async () => {
+    try {
+      
+      const response = await axiosInstance({
+        method: "GET",
+        url: "/hotel/hotelnamelist",
+    // Adjust URL if needed
+    
+    })
+    setHotels(response.data);  // Set hotels to state
+  } catch (error) {
+      console.error("Error fetching hotels:", error);
+      toast.error("Failed to load hotels.");
+    }
+  };
   // Fetch hotels from the backend
   const fetchHotels = async () => {
     try {
@@ -48,19 +64,23 @@ export const DashBoard = () => {
           location: data.get('location'),
           mobile: data.get('mobile'),
           description: data.get('description'),
+          image: data.get('image'),
         };
 
         await axiosInstance({
           method: 'PUT',
           url: `/hotel/update/${selectedHotel._id}`,
           data: updatedData,
+          headers: {
+            'Content-Type': 'multipart/form-data', // Important header for file uploads
+          },
         });
 
         toast.success('Hotel updated successfully!');
         
         // Re-fetch the list of hotels to get the updated data
         fetchHotels();
-
+        fetchHotelsname();
         setIsEditing(false);
         setSelectedHotel(null);
       } catch (error) {
@@ -84,6 +104,20 @@ export const DashBoard = () => {
       toast.error('Failed to delete hotel');
     }
   };
+ // Handle delete hotel
+ const deleteFood = async (_id) => {
+  try {
+    await axiosInstance({
+      method: 'DELETE',
+      url: `/food/delete/${_id}`,
+    });
+    toast.success('food deleted successfully!');
+    setFoodDetails(foodDetails.filter((food) => food._id !== _id));
+  } catch (error) {
+    console.error('Error deleting food:', error);
+    toast.error('Failed to delete food');
+  }
+};
 
   // Handle submit for updating food details
   const handleFoodSubmit = async (data) => {
@@ -133,7 +167,20 @@ export const DashBoard = () => {
       reader.readAsDataURL(file); // Read the file as base64 URL
     }
   };
-
+// Handle file input hotel  change for image preview
+const handleImageChangeh = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSelectedHotel((prevHotel) => ({
+        ...prevHotel,
+        image: reader.result,  // Use base64 image for preview
+      }));
+    };
+    reader.readAsDataURL(file); // Read the file as base64 URL
+  }
+};
   // Handle cancel editing
   const handleCancel = () => {
     setIsEditing(false);
@@ -153,6 +200,7 @@ export const DashBoard = () => {
 
   useEffect(() => {
     // Fetch both hotels and food items on initial load
+    fetchHotelsname();
     fetchHotels();
     fetchFoodList();
   }, []);
@@ -188,6 +236,10 @@ export const DashBoard = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {hotelDetails.map((hotel) => (
               <div key={hotel._id} className="bg-white shadow-lg rounded-lg p-6">
+                <figure className="relative">
+                  <img src={hotel.image} alt={hotel.title} className="w-full h-48 object-cover rounded-t-lg" />
+              
+                </figure>
                 <h3 className="text-2xl font-semibold text-blue-600 mb-4">{hotel.name}</h3>
                 <p className="text-lg text-gray-700 mb-2">
                   Location: <span className="font-semibold">{hotel.location}</span>
@@ -299,6 +351,24 @@ export const DashBoard = () => {
                   className="input input-bordered w-full"
                 />
               </div>
+              <div className="mb-4">
+                <label className="block text-lg font-medium mb-2">Image</label>
+                <input
+                  type="file"
+                  name="image"
+                  onChange={handleImageChangeh} // Handle file input change
+                  className="input input-bordered w-full"
+                />
+                {selectedHotel.image && (
+                  <div className="mt-2">
+                    <img
+                      src={selectedHotel.image}
+                      alt="Preview"
+                      className="max-w-xs max-h-48 object-cover rounded-md"
+                    />
+                  </div>
+                )}
+              </div>
               <button className="btn btn-primary w-full mb-2">Update Hotel</button>
               <button type="button" onClick={handleCancel} className="btn btn-secondary w-full">Cancel</button>
             </form>
@@ -348,15 +418,23 @@ export const DashBoard = () => {
                   </div>
                 )}
               </div>
-              <div className="mb-4">
-                <label className="block text-lg font-medium mb-2">Hotel</label>
-                <input
-                  type="text"
-                  name="hotel"
-                  defaultValue={selectedFood.hotel}
-                  className="input input-bordered w-full"
-                />
-              </div>
+              <div className="form-control">
+              <label className="label">
+                <span className="label-text">Hotel Name</span>
+              </label>
+              <select {...register('hotel')} className="input input-bordered" required>
+                <option value="">Select a hotel</option>
+                {hotels.length > 0 ? (
+                  hotels.map((hotel) => (
+                    <option key={hotel.id} value={hotel.id}>
+                      {hotel.name} {/* Assuming 'id' is the hotel's identifier and 'name' is the hotel's name */}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>Loading hotels...</option>
+                )}
+              </select>
+            </div>
               <button className="btn btn-primary w-full mb-2">Update Food</button>
               <button type="button" onClick={handleCancel} className="btn btn-secondary w-full">Cancel</button>
             </form>

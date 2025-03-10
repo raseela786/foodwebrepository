@@ -31,7 +31,9 @@ export const UserHeader = () => {
         <Link to={"/food"} className="hover:text-indigo-600 transition duration-300">
           Menu
         </Link>
-
+ <Link to={"/hotelsr"} className="hover:text-indigo-600 transition duration-300">
+        Restaurants
+        </Link>
         <Link to={"user/order"} className="hover:text-indigo-600 transition duration-300">
           Your Order
         </Link>

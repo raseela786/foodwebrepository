@@ -10,12 +10,31 @@ export const HotelPage =() => {
   const navigate= useNavigate();
   const onSubmit = async(data )=>
     {
+      alert(data.name)
+      alert(data.description)
+      alert(data.location)
+     alert(data.mobile)
 try{
+   // Create FormData object to handle file upload
+   const formData = new FormData();
+   formData.append('name', data.name);
+   formData.append('description', data.description);
+   formData.append('location', data.location);
+   formData.append('mobile', data.mobile);
+   formData.append('image', data.image[0]); // Assuming only one image is selected
+
+ // Log the FormData content to inspect it
+ for (let [key, value] of formData.entries()) {
+   console.log("raseeeeeeeeeeeeeee",key, value);
+ }
 const response =await axiosInstance(
   {
     method:"POST",
     url:"/hotel/create",
-    data
+    data:formData,
+    headers: {
+      'Content-Type': 'multipart/form-data', // Important header for file uploads
+    },
   }
 )
 console.log("response",response);
@@ -64,6 +83,13 @@ catch(error)
           <input type="text"{...register('mobile')} placeholder="mobile number" className="input input-bordered" required />
         
         </div>
+        
+        <div className="form-control">
+              <label className="label">
+                <span className="label-text">Picture</span>
+              </label>
+              <input type="file" {...register('image')} placeholder="picture" className="input input-bordered" required />
+            </div>
         <div className="form-control mt-6">
           <button className="btn btn-primary">Add Hotel details</button>
         </div>

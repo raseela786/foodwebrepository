@@ -98,6 +98,20 @@ const delteFood = async (req, res, next) => {
             next(error);
         }
     };
+    
+    const getFooditemslistbyname = async (req, res, next) => {
+        try {
+            const { name } = req.params;
+            if (!name) {
+                return res.status(400).json({ success: false, message: "Hotel name is required." });
+            }
+            const foodItems = await Food.find({ hotel: name })
+    
+            res.status(200).json({ success: true, message: "food items fetched", data: foodItems });
+        } catch (error) {
+            next(error);
+        }
+    };
     const getFoodsDetails = async (req, res, next) => {
         try {
             const {foodId} =req.params;
@@ -109,4 +123,4 @@ const delteFood = async (req, res, next) => {
             next(error);
         }
     };
-module.exports={createFood,updateFood,delteFood,getFooditemslist,getFoodsDetails};
+module.exports={createFood,updateFood,delteFood,getFooditemslist,getFoodsDetails,getFooditemslistbyname};

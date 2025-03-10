@@ -29,6 +29,9 @@ export const Header = () => {
           Menu
         </Link>
 
+        <Link to={"/hotelsr"} className="hover:text-indigo-600 transition duration-300">
+        Restaurants
+        </Link>
         <Link to={"/login"} className="hover:text-indigo-600 transition duration-300">
           Login
         </Link>

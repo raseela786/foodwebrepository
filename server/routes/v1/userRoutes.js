@@ -1,5 +1,5 @@
 const express = require("express");
-const { userSignup,userLogin, userLogout, userProfile, checkUser, userProfiles, updateProfile, userProfilePic, delteuser } = require("../../controller/userControllers");
+const { userSignup,userLogin, userLogout, userProfile, checkUser, userProfiles, updateProfile, userProfilePic, delteuser, BlockUser, UnblockUser } = require("../../controller/userControllers");
 const {userAuth}=require("../../middlewares/userAuth");
 const { adminAuth } = require("../../middlewares/adminAuth");
 const { upload } = require("../../middlewares/multer");
@@ -11,6 +11,8 @@ router.post("/logout",userAuth,userLogout);
 
 router.get("/userProfile",userAuth,userProfile);
 router.get("/userProfiles",adminAuth,userProfiles);
+router.post("/userblock/:userId",adminAuth,BlockUser);
+router.post("/userunblock/:userId",adminAuth,UnblockUser);
 router.delete("/userDelete/:userId",adminAuth,delteuser);
 router.get("/userList")
 router.get("/userProfile",userAuth,userProfilePic);

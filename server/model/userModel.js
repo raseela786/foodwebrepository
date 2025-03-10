@@ -28,7 +28,16 @@ food:
 {
     type:mongoose.Schema.Types.ObjectId,
     ref:"Food",
-}
+},
+hotel:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"Hotel",
+        },
+    blocked: {
+            type: Boolean,
+            default: false // New field with default value
+        }
+       
 });
 //schema exporting using this name db creating
  const User =mongoose.model('User',userSchema);

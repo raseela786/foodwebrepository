@@ -1,12 +1,17 @@
 
-const {  handleImageUpload} = require("../utils/imageUpload");
 const{ Hotel }=require("../model/hotelModel");
+const { handleImageUpload1 } = require("../utils/imageUpload");
 const addHotel = async (req, res, next) => {
     try {
         const user = req.user;
-
+    
         const {name, description, location,mobile} = req.body;
-
+        let imageUrl;
+        console.log("name,",name)
+        console.log(" description, ",description);
+        console.log("loca,",location)
+        console.log("mob,",mobile)
+        
         if (!name || !description  || !mobile || !location) {
             return res.status(400).json({ message: "all fields required" });
         }
@@ -16,10 +21,15 @@ const addHotel = async (req, res, next) => {
         if (ishotelExist) {
             return res.status(400).json({ success: false, message: "hotel already added" });
         }
+        if (req.file) {
+         
+            imageUrl = await handleImageUpload1(req.file.path);
+        
 
+        }
       
 
-        const newHotel = new Hotel ({name, description, location,mobile  });
+        const newHotel = new Hotel ({name, description, location,mobile , image: imageUrl && imageUrl });
      if(user.role==='admin')
         newHotel.admin=user.id;
         await newHotel.save();
@@ -44,7 +54,7 @@ const updateHotel = async (req, res, next) => {
         const {hotelId} = req.params;
 
         const { name, description, location,mobile} = req.body;
-      
+        let imageUrl;
 
         const isHotelExist = await Hotel.findOne({_id:hotelId});
 
@@ -52,8 +62,10 @@ const updateHotel = async (req, res, next) => {
             return res.status(400).json({ success: false, message: "hotel does not exist" });
         }
 
-       
-      const updatedHotel= await Hotel.findOneAndUpdate({_id:hotelId},{name, description, location,mobile},{new:true,upsert:true})
+        if (req.file) {
+            imageUrl = await handleImageUpload1(req.file.path);
+        }
+      const updatedHotel= await Hotel.findOneAndUpdate({_id:hotelId},{name, description, location,mobile,image: imageUrl},{new:true,upsert:true})
 
         res.status(201).json({ success: true, message: "hotel details updated successfully",data:updatedHotel });
     } catch (error) {

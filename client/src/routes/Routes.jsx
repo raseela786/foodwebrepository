@@ -27,6 +27,9 @@ import UserOrdersPage from "../pages/Order";
 
 //import ManageCoupons from "../pages/admin/Managecoupon";
 import PaymentSuccess from "../payment/PaymentSuccessPage";
+import { HotelsDetailsPage } from "../pages/UserhotelPage";
+import { MenubasedHotel } from "../pages/MenubasedHotel";
+
 
 export const router = createBrowserRouter([
   {
@@ -54,6 +57,15 @@ export const router = createBrowserRouter([
         path: "food",
         element: <FoodItemList />,
       },
+      {
+        path: "hotelsr",
+        element: <HotelsDetailsPage />,
+      },
+      {
+        path: "hotelmenu/:name",       
+         element:<MenubasedHotel/>
+      }
+     ,
       {
         path: "fooditem-details/:id/:name",
         element: <FoodItemDetails />,
